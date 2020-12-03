@@ -7,7 +7,7 @@ function getMinMax(minMaxStr) {
 }
 
 
-function validPass() {
+function validPassRange() {
     const passList = fs.readFileSync('input.txt', 'utf8').replace(/\r/g, "").split("\n");
     var numValid = 0;
     for (var i = 0; i < passList.length; i++) {
@@ -26,4 +26,21 @@ function validPass() {
     return numValid;
 }
 
-console.log(validPass());
+function validPassExact() {
+    const passList = fs.readFileSync('input.txt', 'utf8').replace(/\r/g, "").split("\n");
+    var numValid = 0;
+    for (var i = 0; i < passList.length; i++) {
+        const row = passList[i].split(': ');
+        const minMax = getMinMax(row[0]);
+        const match = row[0].charAt(row[0].length - 1);
+        console.log(match);
+
+        if (row[1].charAt(minMax[0] - 1) == match && row[1].charAt(minMax[1] - 1) !== match ||
+                row[1].charAt(minMax[0] - 1) !== match && row[1].charAt(minMax[1] - 1) == match)
+            numValid++;
+    }
+
+    return numValid;
+}
+
+console.log(validPassExact());
