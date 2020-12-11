@@ -1,5 +1,74 @@
 var fs = require("fs");
 
+function getAdjSeat(row, col, direction, seats) {
+  switch (direction) {
+    case "up-left":
+      do {
+        row--;
+        col--;
+        if (row >= 0 && col >= 0 && seats[row][col] !== ".")
+          return seats[row][col];
+      } while (row >= 0 && col >= 0);
+      return ".";
+    case "up":
+      do {
+        row--;
+        if (row >= 0 && seats[row][col] !== ".") return seats[row][col];
+      } while (row >= 0);
+      return ".";
+    case "up-right":
+      do {
+        row--;
+        col++;
+        if (row >= 0 && col < seats[0].length && seats[row][col] !== ".")
+          return seats[row][col];
+      } while (row >= 0 && col < seats[0].length);
+      return ".";
+    case "left":
+      do {
+        col--;
+        if (col >= 0 && seats[row][col] !== ".") return seats[row][col];
+      } while (col >= 0);
+      return ".";
+    case "right":
+      do {
+        col++;
+        if (col < seats[0].length && seats[row][col] !== ".")
+          return seats[row][col];
+      } while (col < seats[0].length);
+      return ".";
+    case "down-left":
+      do {
+        row++;
+        col--;
+        if (row < seats.length && col >= 0 && seats[row][col] !== ".")
+          return seats[row][col];
+      } while (row < seats.length && col >= 0);
+      return ".";
+    case "down":
+      do {
+        row++;
+        if (row < seats.length && seats[row][col] !== ".")
+          return seats[row][col];
+      } while (row < seats.length);
+      return ".";
+    case "down-right":
+      do {
+        row++;
+        col++;
+        if (
+          row < seats.length &&
+          col < seats[0].length &&
+          seats[row][col] !== "."
+        )
+          return seats[row][col];
+      } while (row < seats.length && col < seats[0].length);
+      return ".";
+  }
+
+  return ".";
+}
+
 // Top left corner, left to right then down
 function seat(seats) {
   const newSeats = [];
@@ -8,21 +77,14 @@ function seat(seats) {
     for (var j = 0; j < seats[0].length; j++) {
       newSeats[i].push(seats[i][j]);
       if (seats[i][j] == "." || seats[i][j] == "#") continue;
-      if (i - 1 >= 0 && j - 1 >= 0 && seats[i - 1][j - 1] == "#") continue;
-      if (i - 1 >= 0 && seats[i - 1][j] == "#") continue;
-      if (i - 1 >= 0 && j + 1 < seats[0].length && seats[i - 1][j + 1] == "#")
-        continue;
-      if (j - 1 >= 0 && seats[i][j - 1] == "#") continue;
-      if (j + 1 < seats[0].length && seats[i][j + 1] == "#") continue;
-      if (i + 1 < seats.length && j - 1 >= 0 && seats[i + 1][j - 1] == "#")
-        continue;
-      if (i + 1 < seats.length && seats[i + 1][j] == "#") continue;
-      if (
-        i + 1 < seats.length &&
-        j + 1 < seats[0].length &&
-        seats[i + 1][j + 1] == "#"
-      )
-        continue;
+      if (getAdjSeat(i, j, "up-left", seats) == "#") continue;
+      if (getAdjSeat(i, j, "up", seats) == "#") continue;
+      if (getAdjSeat(i, j, "up-right", seats) == "#") continue;
+      if (getAdjSeat(i, j, "left", seats) == "#") continue;
+      if (getAdjSeat(i, j, "right", seats) == "#") continue;
+      if (getAdjSeat(i, j, "down-left", seats) == "#") continue;
+      if (getAdjSeat(i, j, "down", seats) == "#") continue;
+      if (getAdjSeat(i, j, "down-right", seats) == "#") continue;
       newSeats[i][j] = "#";
     }
   }
@@ -40,21 +102,14 @@ function evict(seats) {
         newSeats[i].push(seats[i][j]);
         continue;
       }
-      if (i - 1 >= 0 && j - 1 >= 0 && seats[i - 1][j - 1] == "#") numAdj++;
-      if (i - 1 >= 0 && seats[i - 1][j] == "#") numAdj++;
-      if (i - 1 >= 0 && j + 1 < seats[0].length && seats[i - 1][j + 1] == "#")
-        numAdj++;
-      if (j - 1 >= 0 && seats[i][j - 1] == "#") numAdj++;
-      if (j + 1 < seats[0].length && seats[i][j + 1] == "#") numAdj++;
-      if (i + 1 < seats.length && j - 1 >= 0 && seats[i + 1][j - 1] == "#")
-        numAdj++;
-      if (i + 1 < seats.length && seats[i + 1][j] == "#") numAdj++;
-      if (
-        i + 1 < seats.length &&
-        j + 1 < seats[0].length &&
-        seats[i + 1][j + 1] == "#"
-      )
-        numAdj++;
+      if (getAdjSeat(i, j, "up-left", seats) == "#") numAdj++;
+      if (getAdjSeat(i, j, "up", seats) == "#") numAdj++;
+      if (getAdjSeat(i, j, "up-right", seats) == "#") numAdj++;
+      if (getAdjSeat(i, j, "left", seats) == "#") numAdj++;
+      if (getAdjSeat(i, j, "right", seats) == "#") numAdj++;
+      if (getAdjSeat(i, j, "down-left", seats) == "#") numAdj++;
+      if (getAdjSeat(i, j, "down", seats) == "#") numAdj++;
+      if (getAdjSeat(i, j, "down-right", seats) == "#") numAdj++;
 
       newSeats[i].push(numAdj >= 5 ? "L" : seats[i][j]);
     }
