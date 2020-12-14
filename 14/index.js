@@ -50,4 +50,61 @@ function memorySum() {
   return total;
 }
 
-console.log(memorySum());
+function generateAddresses(index, binary) {
+  const nums = [];
+  if (index >= binary.length) {
+    return [generateNumber(binary)];
+  }
+  for (var i = index; i < binary.length; i++) {
+    if (binary[i] == "X") {
+      binary[i] = 0;
+      generateAddresses(index + 1, binary).forEach((num) => nums.push(num));
+      binary[i] = 1;
+      generateAddresses(index + 1, binary).forEach((num) => nums.push(num));
+      binary[i] = "X";
+      break;
+    }
+  }
+
+  if (i == binary.length && binary[binary.length - 1] !== 'X') {
+    return [generateNumber(binary)];
+  }
+
+  return nums;
+}
+
+function memorySumFloating() {
+  const input = fs.readFileSync("input.txt", "utf8").split(/\r\n/g);
+  const nums = [];
+  var total = 0;
+  var mask;
+  input.forEach((row) => {
+    if (row.substring(0, 4) == "mask") {
+      mask = row.substring(row.indexOf("=") + 2).split("");
+      return;
+    }
+
+    const binaryIndex = generateBinary(
+      parseInt(row.substring(row.indexOf("[") + 1, row.indexOf("]")))
+    );
+    for (var i = 0; i < binaryIndex.length; i++) {
+      if (mask[i] == "X" || mask[i] == "1") {
+        binaryIndex[i] = mask[i] == "X" ? "X" : 1;
+      }
+    }
+
+    const indexes = generateAddresses(0, binaryIndex);
+    const value = parseInt(row.substring(row.indexOf("=") + 2));
+    indexes.forEach((index) => {
+        total += value;
+        if (nums[index] !== undefined && nums[index] !== 0) {
+            total -= nums[index];
+        }
+        nums[index] = value;
+    });
+  });
+
+  return total;
+}
+
+console.log(memorySumFloating());
