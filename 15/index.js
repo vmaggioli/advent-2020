@@ -2,7 +2,7 @@ const fs = require("fs");
 
 function numberGame() {
   const startingNumbers = fs.readFileSync("input.txt", "utf8").split(",");
-  const end = 2020;
+  const end = 30000000;
   var lastNumberSpoken;
   var turn = 0;
   const numberMap = {};
@@ -34,7 +34,6 @@ function numberGame() {
     turn++;
   }
 
-  //   console.log(numberMap)
   return lastNumberSpoken;
 }
 
